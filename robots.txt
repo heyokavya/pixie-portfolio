@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kavyadevda.heyokavya.workers.dev/sitemap.xml
