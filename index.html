@@ -1471,6 +1471,11 @@ html.pixie-cursor-active #pixie-cursor {
 @media (max-width: 679px) {
   #skills {
     overflow-x: clip;
+    padding-top: 56px !important;
+    padding-bottom: 20px !important;
+  }
+  #skills .w {
+    padding: 0 18px !important;
   }
 
   /* Skills Horizontal Carousel (Mobile Only) */
@@ -1482,23 +1487,24 @@ html.pixie-cursor-active #pixie-cursor {
     overflow-y: hidden !important;
     align-items: flex-start !important;
     scroll-snap-type: x mandatory;
-    scroll-padding-left: 22px;
-    scroll-padding-right: 22px;
+    scroll-padding-left: 18px;
+    scroll-padding-right: 18px;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
-    margin-left: -22px;
-    margin-right: -22px;
-    padding: 10px 22px 14px !important;
-    gap: 14px !important;
+    touch-action: pan-x pan-y;
+    overscroll-behavior-x: contain;
+    margin-left: -18px;
+    margin-right: -18px;
+    padding: 8px 18px 12px !important;
+    gap: 12px !important;
     scrollbar-width: none;
   }
   .bento-grid::-webkit-scrollbar {
     display: none;
   }
   .bento-card {
-    flex: 0 0 calc(100% - 64px) !important;
+    flex: 0 0 calc(100% - 36px) !important;
     min-width: 0 !important;
-    max-width: calc(100% - 64px) !important;
+    max-width: calc(100% - 36px) !important;
     scroll-snap-align: start;
     scroll-snap-stop: normal;
     box-sizing: border-box;
@@ -1531,8 +1537,8 @@ html.pixie-cursor-active #pixie-cursor {
     justify-content: center;
     align-items: center;
     gap: 6px;
-    margin: 10px 0 16px;
-    padding: 6px 0;
+    margin: 10px 0 12px !important;
+    padding: 4px 0 !important;
   }
   .carousel-dot {
     width: 6px;
@@ -1558,6 +1564,11 @@ html.pixie-cursor-active #pixie-cursor {
   .carousel-dot:focus-visible {
     outline: 2px solid var(--brass);
     outline-offset: 2px;
+  }
+
+  /* Visually balanced transition to Projects on mobile */
+  #projects {
+    padding-top: 48px !important;
   }
 
   /* Targeted Mobile-Only PIXIE OS Card Refinement */
@@ -2734,6 +2745,10 @@ window.__pixieStarfield = {
     const items = carouselEl.querySelectorAll(itemSelector);
     if (!items.length) return;
 
+    function getSnapPadding() {
+      return parseFloat(window.getComputedStyle(carouselEl).paddingLeft) || 18;
+    }
+
     dotsContainerEl.innerHTML = '';
     items.forEach((_, idx) => {
       const dot = document.createElement('button');
@@ -2746,7 +2761,8 @@ window.__pixieStarfield = {
 
       dot.addEventListener('click', (e) => {
         e.preventDefault();
-        const targetX = items[idx].offsetLeft - carouselEl.offsetLeft - 22;
+        const pad = getSnapPadding();
+        const targetX = items[idx].offsetLeft - carouselEl.offsetLeft - pad;
         carouselEl.scrollTo({ left: Math.max(0, targetX), behavior: 'smooth' });
       });
 
@@ -2761,6 +2777,7 @@ window.__pixieStarfield = {
       isTicking = true;
       requestAnimationFrame(() => {
         const carouselLeft = carouselEl.getBoundingClientRect().left;
+        const pad = getSnapPadding();
         let activeIdx = 0;
         let minDiff = Infinity;
         const atEnd = carouselEl.scrollLeft + carouselEl.clientWidth >= carouselEl.scrollWidth - 12;
@@ -2770,7 +2787,7 @@ window.__pixieStarfield = {
         } else {
           items.forEach((item, idx) => {
             const rect = item.getBoundingClientRect();
-            const diff = Math.abs(rect.left - (carouselLeft + 22));
+            const diff = Math.abs(rect.left - (carouselLeft + pad));
             if (diff < minDiff) {
               minDiff = diff;
               activeIdx = idx;
@@ -2802,6 +2819,30 @@ window.__pixieStarfield = {
           dots[nextIdx].click();
         }
       }
+    });
+
+    // Pointer-drag support for desktop mouse testing
+    let isDown = false;
+    let startX = 0;
+    let scrollStart = 0;
+    carouselEl.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      isDown = true;
+      startX = e.pageX;
+      scrollStart = carouselEl.scrollLeft;
+      carouselEl.style.cursor = 'grabbing';
+      carouselEl.style.userSelect = 'none';
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!isDown) return;
+      const walk = e.pageX - startX;
+      carouselEl.scrollLeft = scrollStart - walk;
+    });
+    window.addEventListener('pointerup', (e) => {
+      if (!isDown) return;
+      isDown = false;
+      carouselEl.style.cursor = '';
+      carouselEl.style.userSelect = '';
     });
   }
 
