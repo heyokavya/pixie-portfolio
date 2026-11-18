@@ -1,4 +1,26 @@
 User-agent: *
 Allow: /
 
+# Dedicated AI Answer Engine and Search Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
 Sitemap: https://kavyadevda.heyokavya.workers.dev/sitemap.xml
